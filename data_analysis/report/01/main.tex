@@ -1,0 +1,106 @@
+\documentclass[dvipdfmx,a4paper]{jsarticle}
+\usepackage{amsmath,amssymb}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{ascmac}
+\usepackage{subfigure}
+\usepackage{verbatim}
+\usepackage{wrapfig}
+\usepackage{makeidx}
+\usepackage[dvipdfmx]{hyperref}
+\usepackage{setspace}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{cleveref}
+\usepackage{mathtools}
+\usepackage{framed}
+\usepackage[textwidth=50zw,lines=46]{geometry}
+\usepackage{here}
+
+\usepackage{listings, jlisting, color}
+\definecolor{OliveGreen}{rgb}{0.0,0.6,0.0}
+\definecolor{Orenge}{rgb}{0.89,0.55,0}
+\definecolor{SkyBlue}{rgb}{0.28, 0.28, 0.95}
+\lstset{
+  language={C++}, % 言語の指定
+  basicstyle={\ttfamily},
+  identifierstyle={\small},
+  commentstyle={\smallitshape},
+  keywordstyle={\small\bfseries},
+  ndkeywordstyle={\small},
+  stringstyle={\small\ttfamily},
+  frame={tb},
+  breaklines=true,
+  columns=[l]{fullflexible},
+  numbers=left,
+  xrightmargin=0zw,
+  xleftmargin=3zw,
+  numberstyle={\scriptsize},
+  stepnumber=1,
+  numbersep=1zw,
+  lineskip=-0.5ex,
+  keywordstyle={\color{SkyBlue}},     %キーワード(int, ifなど)の書体指定
+  commentstyle={\color{OliveGreen}},  %注釈の書体
+  stringstyle=\color{Orenge}          %文字列
+}
+
+\begin{document}
+
+\title{課題演習C3\quad レポート (1回目) }
+\author{0500-34-0042\quad 大平 達也}
+\date{\today}
+\maketitle
+
+\section{目的}
+系外惑星TOI1516 bのTransit検出を目標とする。分かっている, 観測日におけるターゲットの情報は以下の通り: 
+\begin{description}
+  \item[観測日] 2024/11/11
+  \item[ingress] 20:00
+  \item[degrees] 22:50
+  \item[視等級] 10.8 mag
+  \item[減光量] 0.016 mag
+\end{description}
+今回は, ingressの途中から観測を始めた。
+\section{これまでの進捗状況}
+\subsection{データの一次処理}
+IRAFを用いて, 11/11に取得した観測データの一次処理を行った。
+\subsection{測光用コードの開発}
+途中までIRAFのスクリプトを書いていたが, 途中からPythonでの開発に切り替えた。作成したコードは以下の通り。なおアパーチャーの半径はHWHMの1.2倍とした。 
+
+\input{code/apphot.tex}
+
+\subsection{測光結果}
+相対測光により, TOI1516の等級を各画像で求めた。これをplotしたものを図\ref{fig:toi1516}に示す。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{./fig/light_curve_toi1516_with_moving_average.png}
+  \caption{TOI1516の光度曲線}
+  \label{fig:toi1516}
+\end{figure}
+
+\subsection{参照星の選び方について}
+参照星は, 常に視野内に位置し, ターゲット星と同程度の明るさのものを選んだ。また, 測光したのちに, 参照星の等級の時間変化を調べ, 参照星として適切であるか検証した。
+
+たとえば, 最初に選んだ参照星の等級の時間変化は図\ref{fig:comp}であった。全体として同じようなトレンドではあるが, Comp 4 (紫) のみノイズが大きいように見える。実際, Comp 4が参照星の中で最も暗い星であったことから, 参照星として選ぶのは適切でないと判断し, 他の参照星を選んだ。これを繰り返すことで, 最終的な参照星を選んだ。
+
+なお, 参考までに, TOI1516の高度からエアマスを計算したplotも掲載しておく (図\ref{fig:airmass})。観測データから, 参照星の等級は時間とともに暗い方へ変化していったためエアマスには反する結果となった。原因は不明。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{./fig/light_curve_comp_first.png}
+  \caption{参照星の光度曲線}
+  \label{fig:comp}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{./fig/airmass_over_time.png}
+  \caption{エアマスの時間変化}
+  \label{fig:airmass}
+\end{figure}
+
+\section{今後の予定}
+PSF測光とかしてみたいです。
+\end{document}
