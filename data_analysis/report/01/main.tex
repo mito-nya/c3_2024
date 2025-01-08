@@ -49,7 +49,7 @@
 
 \title{課題演習C3\quad レポート (1回目) }
 \author{0500-34-0042\quad 大平 達也}
-\date{\today}
+\date{2024/12/23}
 \maketitle
 
 \section{目的}
@@ -101,6 +101,14 @@ IRAFを用いて, 11/11に取得した観測データの一次処理を行った
   \label{fig:airmass}
 \end{figure}
 
-\section{今後の予定}
-PSF測光とかしてみたいです。
+\section{栗田先生からのフィードバック}
+\begin{itemize}
+  \item 参照星のペアのquality check
+  \item 分散を取って, 目的として不十分な精度ならば移動平均をとる
+  \begin{itemize}
+    \item 移動平均は必要最低限のものを (分散が1\%程度のものを取る)
+    \item 移動平均のbinの幅の根拠も
+  \end{itemize}
+  \item 予測値を重ねる
+\end{itemize}
 \end{document}
