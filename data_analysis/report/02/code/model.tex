@@ -1,0 +1,54 @@
+\begin{lstlisting}[caption=トランジットモデル計算およびプロット用のコード, label=model, language=Python]
+    dt = datetime.datetime(2024, 11, 11, 21, 22, 00)
+
+    # dt をユリウス日に変換
+    t = Time(dt, scale='utc')
+    t0_jd = jd_value
+    
+    # Transit parameter 設定
+    params = batman.TransitParams()
+    params.t0 = t0_jd        # トランジット中心を JD で設定
+    params.per = 2.056014
+    params.rp = 0.1224
+    params.a = 6.220
+    params.inc = 90.0
+    params.ecc = 0.0
+    params.w = 90.0
+    params.u = []           
+    params.limb_dark = "uniform"
+    
+    time_jd = np.linspace(params.t0 - 0.07, params.t0 + 0.07, 5000)
+    
+    # トランジットモデルの計算
+    m = batman.TransitModel(params, time_jd)
+    flux_model = m.light_curve(params)
+    
+    # datetimeに変換しておく
+    time_datetime = Time(time_jd, format='jd').to_datetime()
+    
+    # ここからはデータのプロット
+    times_jst_naive = [dt.replace(tzinfo=None) if dt is not None and not isinstance(dt, float) else dt for dt in times]
+    
+    # データをDataFrameに変換
+    df = pd.DataFrame({
+        'Time': times_jst_naive,
+        'Flux_Norm': norm_fluxes
+    })
+    
+    # 'Time'をDatetimeIndexに設定
+    df.set_index('Time', inplace=True)
+    time_array = df.index.to_numpy()
+    
+    # 光度曲線のプロット
+    fig, ax = plt.subplots(figsize=(10, 6))
+    plt.plot(time_array, df['Flux_Norm'], 'o', markersize=3, alpha=0.3, color='black', label="data")
+    plt.plot(time_datetime, flux_model, color='black', lw=3, label="model")
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+    # plt.gca().invert_yaxis()
+    plt.xlabel('Time')
+    plt.ylabel('Flux [Rel.]')
+    plt.title('TOI-1516 Light Curve')
+    plt.grid(True)
+    plt.show()
+    fig.savefig('light_curve_fit.png')
+\end{lstlisting}
